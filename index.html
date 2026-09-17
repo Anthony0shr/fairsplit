@@ -5,9 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FairSplit - Cloud-Native Equitable Expense Sharing</title>
 
-  <!-- Google Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
@@ -21,6 +20,8 @@
       --mint: #2ec4b6;
       --tight-accent: #fef3c7;
       --tight-text: #92400e;
+      --deferred-accent: #ede9fe;
+      --deferred-text: #5b21b6;
       --border: #e2e8f0;
       --text-main: #1e293b;
       --text-muted: #64748b;
@@ -30,220 +31,49 @@
       --shadow: 0 4px 16px rgba(15, 45, 60, 0.06);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-main); padding: 2rem 1rem; line-height: 1.5; }
+    .container { max-width: 980px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 2rem; }
+    header h1 { color: var(--navy); font-size: 2.2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    header p { color: var(--text-muted); font-size: 1rem; margin-top: 0.25rem; }
+    .badge { display: inline-block; margin-top: 0.5rem; background: var(--teal-light); color: var(--teal); padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; }
+    
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      padding: 2rem 1rem;
-      line-height: 1.5;
-    }
+    .card { background: var(--card-bg); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); border: 1px solid var(--border); }
+    .card h2 { color: var(--navy); font-size: 1.2rem; margin-bottom: 1rem; }
+    .form-group { margin-bottom: 1rem; }
+    label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--navy); margin-bottom: 0.35rem; }
+    input[type="text"], input[type="number"], input[type="date"], select { width: 100%; padding: 0.65rem 0.8rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; background: #fafafa; }
+    input:focus, select:focus { outline: none; border-color: var(--teal); background: #fff; }
+    button { cursor: pointer; font-weight: 600; border: none; border-radius: 8px; padding: 0.7rem 1.2rem; transition: 0.2s; }
+    .btn-primary { background: var(--teal); color: #fff; width: 100%; }
+    .btn-primary:hover { background: #006b74; }
+    .btn-secondary { background: var(--navy); color: #fff; }
+    .btn-action { font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 6px; }
+    .btn-forgive { background: #fee2e2; color: var(--danger); }
+    .btn-pay { background: #dcfce7; color: var(--success); }
 
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-    }
+    .members-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+    .member-tag { background: var(--teal-light); color: var(--teal); padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.4rem; }
+    .member-tag button { background: none; border: none; color: var(--teal); padding: 0; cursor: pointer; font-size: 1rem; }
 
-    header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
+    .status-list { background: var(--bg-color); border-radius: 8px; padding: 0.75rem; max-height: 250px; overflow-y: auto; }
+    .status-row { padding: 0.5rem 0; border-bottom: 1px dashed var(--border); }
+    .status-row:last-child { border-bottom: none; }
+    .status-main { display: flex; justify-content: space-between; align-items: center; }
+    .date-selection { display: none; margin-top: 0.4rem; padding: 0.4rem; background: #ffffff; border-radius: 6px; border: 1px solid var(--border); font-size: 0.8rem; }
 
-    header h1 {
-      color: var(--navy);
-      font-size: 2.2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
+    .history-card, .settle-card, .pledges-card { margin-top: 1.5rem; }
+    .history-item, .pledge-item { padding: 1rem; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.75rem; background: #fafafa; }
+    .history-header, .pledge-header { display: flex; justify-content: space-between; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem; }
+    .pill-tight { background: var(--tight-accent); color: var(--tight-text); padding: 0.15rem 0.45rem; border-radius: 4px; font-weight: 600; font-size: 0.75rem; }
+    .pill-defer { background: var(--deferred-accent); color: var(--deferred-text); padding: 0.15rem 0.45rem; border-radius: 4px; font-weight: 600; font-size: 0.75rem; }
+    .pill-locked { background: #fee2e2; color: #991b1b; padding: 0.15rem 0.45rem; border-radius: 4px; font-weight: 600; font-size: 0.75rem; }
 
-    header p {
-      color: var(--text-muted);
-      font-size: 1rem;
-      margin-top: 0.25rem;
-    }
-
-    .badge {
-      display: inline-block;
-      margin-top: 0.5rem;
-      background: var(--teal-light);
-      color: var(--teal);
-      padding: 0.25rem 0.75rem;
-      border-radius: 50px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    @media (max-width: 768px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-    }
-
-    .card h2 {
-      color: var(--navy);
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-    }
-
-    .form-group {
-      margin-bottom: 1rem;
-    }
-
-    label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--navy);
-      margin-bottom: 0.35rem;
-    }
-
-    input[type="text"],
-    input[type="number"],
-    select {
-      width: 100%;
-      padding: 0.65rem 0.8rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.95rem;
-      background: #fafafa;
-    }
-
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--teal);
-      background: #fff;
-    }
-
-    button {
-      cursor: pointer;
-      font-weight: 600;
-      border: none;
-      border-radius: 8px;
-      padding: 0.7rem 1.2rem;
-      transition: 0.2s;
-    }
-
-    .btn-primary {
-      background: var(--teal);
-      color: #fff;
-      width: 100%;
-    }
-
-    .btn-primary:hover {
-      background: #006b74;
-    }
-
-    .btn-secondary {
-      background: var(--navy);
-      color: #fff;
-    }
-
-    .members-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 1rem;
-    }
-
-    .member-tag {
-      background: var(--teal-light);
-      color: var(--teal);
-      padding: 0.35rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .member-tag button {
-      background: none;
-      border: none;
-      color: var(--teal);
-      padding: 0;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-
-    .status-list {
-      background: var(--bg-color);
-      border-radius: 8px;
-      padding: 0.75rem;
-      max-height: 180px;
-      overflow-y: auto;
-    }
-
-    .status-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.4rem 0;
-      border-bottom: 1px dashed var(--border);
-    }
-
-    .status-row:last-child {
-      border-bottom: none;
-    }
-
-    .history-card, .settle-card {
-      margin-top: 1.5rem;
-    }
-
-    .history-item {
-      padding: 1rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      margin-bottom: 0.75rem;
-      background: #fafafa;
-    }
-
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      font-weight: 600;
-      color: var(--navy);
-      margin-bottom: 0.4rem;
-    }
-
-    .pill-tight {
-      background: var(--tight-accent);
-      color: var(--tight-text);
-      padding: 0.1rem 0.4rem;
-      border-radius: 4px;
-      font-weight: 600;
-      font-size: 0.75rem;
-    }
-
-    .balance-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.65rem 0;
-      border-bottom: 1px solid var(--border);
-    }
-
+    .balance-row { display: flex; justify-content: space-between; padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
     .text-owed { color: var(--success); font-weight: 600; }
     .text-owes { color: var(--danger); font-weight: 600; }
     .text-settled { color: var(--text-muted); }
@@ -255,7 +85,7 @@
   <div class="container">
     <header>
       <h1>🤝 FairSplit</h1>
-      <p>Empathetic Expense Sharing with Automatic Financial Balancing</p>
+      <p>Empathetic Expense Sharing with Dynamic Equity Protocols</p>
       <div class="badge">Cloud-Native Edge Prototype</div>
     </header>
 
@@ -286,33 +116,41 @@
           </div>
 
           <div class="form-group">
-            <label for="expense-payer">Who Paid?</label>
+            <label for="expense-payer">Who Paid Upfront?</label>
             <select id="expense-payer" required>
               <option value="" disabled selected>Select member</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label>Check if "Tight this month" (Pays 50%):</label>
+            <label>Member Financial Status (50% now, 50% scheduled):</label>
             <div id="status-checkboxes" class="status-list"></div>
           </div>
 
-          <button type="submit" class="btn-primary">Add Expense & Calculate</button>
+          <button type="submit" class="btn-primary">Add Expense & Apply Balancing</button>
         </form>
       </section>
     </div>
 
-    <!-- 3. EXPENSE HISTORY -->
+    <!-- 3. ACTIVE DEFERRED PLEDGES (DEFAULT HANDLING CENTER) -->
+    <section class="card pledges-card">
+      <h2>3. Deferred Repayment Pledges & Guardrails</h2>
+      <div id="pledges-container">
+        <p class="empty-state">No pending deferred pledges.</p>
+      </div>
+    </section>
+
+    <!-- 4. EXPENSE HISTORY -->
     <section class="card history-card">
-      <h2>3. Calculation Breakdown</h2>
+      <h2>4. Calculation Breakdown</h2>
       <div id="history-container">
         <p class="empty-state">No expenses added yet.</p>
       </div>
     </section>
 
-    <!-- 4. NET SETTLE-UP -->
+    <!-- 5. NET SETTLE-UP -->
     <section class="card settle-card">
-      <h2>4. Net Settle-Up Summary</h2>
+      <h2>5. Net Settle-Up Summary (Current Month)</h2>
       <div id="settle-container">
         <p class="empty-state">Add members and expenses to view net balances.</p>
       </div>
@@ -320,9 +158,9 @@
   </div>
 
   <script>
-    // In-memory state pre-filled for instant hackathon demos
     let members = ["Alice", "Bob", "Priya"];
     let expenses = [];
+    let deferredPledges = []; // Array of active pledges: { id, member, originalAmount, remainingAmount, dueDate, expenseDesc }
 
     window.addEventListener("DOMContentLoaded", () => {
       renderMembers();
@@ -345,8 +183,23 @@
 
     function removeMember(name) {
       members = members.filter(m => m !== name);
+      deferredPledges = deferredPledges.filter(p => p.member !== name);
       renderMembers();
       updateSettleUp();
+      renderPledges();
+    }
+
+    function hasOverduePledge(member) {
+      const today = new Date().toISOString().split('T')[0];
+      return deferredPledges.some(p => p.member === member && p.remainingAmount > 0 && p.dueDate < today);
+    }
+
+    function toggleDateField(member) {
+      const cb = document.getElementById(`cb-${member}`);
+      const dateBox = document.getElementById(`date-box-${member}`);
+      if (cb && dateBox) {
+        dateBox.style.display = cb.checked ? "block" : "none";
+      }
     }
 
     function renderMembers() {
@@ -354,58 +207,74 @@
       const select = document.getElementById("expense-payer");
       const checkContainer = document.getElementById("status-checkboxes");
 
-      // Update badges
       list.innerHTML = members.length ? "" : "<p class='empty-state'>No members yet.</p>";
       members.forEach(m => {
-        list.innerHTML += `
-          <div class="member-tag">
-            ${m} <button type="button" onclick="removeMember('${m}')">&times;</button>
-          </div>`;
+        list.innerHTML += `<div class="member-tag">${m} <button type="button" onclick="removeMember('${m}')">&times;</button></div>`;
       });
 
-      // Update dropdown
       select.innerHTML = '<option value="" disabled selected>Select member</option>';
       members.forEach(m => {
         select.innerHTML += `<option value="${m}">${m}</option>`;
       });
 
-      // Update checkboxes
+      const nextMonth = new Date();
+      nextMonth.setDate(nextMonth.getDate() + 30);
+      const defaultDateString = nextMonth.toISOString().split('T')[0];
+
       checkContainer.innerHTML = members.length ? "" : "<span class='empty-state'>Add members first.</span>";
       members.forEach(m => {
+        const isLocked = hasOverduePledge(m);
         checkContainer.innerHTML += `
           <div class="status-row">
-            <span>${m}</span>
-            <label style="font-size: 0.85rem; cursor: pointer;">
-              <input type="checkbox" data-member="${m}" class="tight-cb" /> Tight this month
-            </label>
+            <div class="status-main">
+              <span><strong>${m}</strong></span>
+              ${isLocked 
+                ? `<span class="pill-locked">Locked (Overdue Pledge)</span>` 
+                : `<label style="font-size: 0.85rem; cursor: pointer;">
+                     <input type="checkbox" id="cb-${m}" data-member="${m}" class="tight-cb" onchange="toggleDateField('${m}')" /> Tight this month
+                   </label>`
+              }
+            </div>
+            ${!isLocked ? `
+              <div id="date-box-${m}" class="date-selection">
+                <label style="font-size: 0.75rem; margin-bottom: 2px;">Target date to pay deferred 50%:</label>
+                <input type="date" id="date-${m}" value="${defaultDateString}" />
+              </div>` : ''}
           </div>`;
       });
     }
 
-    // --- FAIRNESS CALCULATION ENGINE WITH ALL EDGE CASES SOLVED ---
     function calculateFairShares(totalAmount, allMembers, tightList, payer) {
       const N = allMembers.length;
       const k = tightList.length;
       const m = N - k;
       const shares = {};
+      const deferredAmounts = {};
 
-      // Edge Case 1: k === N (everyone tight) or k === 0 (nobody tight)
       if (k === 0 || k === N) {
         const equalShare = Math.floor((totalAmount / N) * 100) / 100;
-        allMembers.forEach(person => shares[person] = equalShare);
+        allMembers.forEach(person => {
+          shares[person] = equalShare;
+          deferredAmounts[person] = 0;
+        });
       } else {
-        // Core Formula
         const baseEqual = totalAmount / N;
-        const tightShare = Math.floor((0.5 * baseEqual) * 100) / 100;
-        const totalTightPaid = tightShare * k;
-        const normalShare = Math.floor(((totalAmount - totalTightPaid) / m) * 100) / 100;
+        const tightImmediateShare = Math.floor((0.5 * baseEqual) * 100) / 100;
+        const deferredPortion = Math.round((baseEqual - tightImmediateShare) * 100) / 100;
+        const totalTightPaidNow = tightImmediateShare * k;
+        const normalShare = Math.floor(((totalAmount - totalTightPaidNow) / m) * 100) / 100;
 
         allMembers.forEach(person => {
-          shares[person] = tightList.includes(person) ? tightShare : normalShare;
+          if (tightList.includes(person)) {
+            shares[person] = tightImmediateShare;
+            deferredAmounts[person] = deferredPortion;
+          } else {
+            shares[person] = normalShare;
+            deferredAmounts[person] = 0;
+          }
         });
       }
 
-      // Edge Case 2: Rounding / Cent Preservation (assign leftover paise to payer)
       let allocatedTotal = 0;
       Object.values(shares).forEach(val => allocatedTotal += val);
       const delta = Math.round((totalAmount - allocatedTotal) * 100) / 100;
@@ -413,7 +282,21 @@
         shares[payer] = Math.round((shares[payer] + delta) * 100) / 100;
       }
 
-      return shares;
+      return { shares, deferredAmounts };
+    }
+
+    // FEATURE 2: AUTO-OFFSET ENGINE
+    function processAutoOffset(payer, expenseAmount, payerShare) {
+      let credit = expenseAmount - payerShare;
+      if (credit <= 0) return;
+
+      deferredPledges.forEach(pledge => {
+        if (pledge.member === payer && pledge.remainingAmount > 0 && credit > 0) {
+          const offset = Math.min(credit, pledge.remainingAmount);
+          pledge.remainingAmount = Math.round((pledge.remainingAmount - offset) * 100) / 100;
+          credit -= offset;
+        }
+      });
     }
 
     function handleAddExpense(e) {
@@ -428,9 +311,34 @@
       const payer = document.getElementById("expense-payer").value;
 
       const checkedBoxes = document.querySelectorAll(".tight-cb:checked");
-      const tightMembers = Array.from(checkedBoxes).map(cb => cb.getAttribute("data-member"));
+      const tightMembers = [];
+      const repaymentDates = {};
 
-      const calculatedShares = calculateFairShares(amount, members, tightMembers, payer);
+      checkedBoxes.forEach(cb => {
+        const member = cb.getAttribute("data-member");
+        tightMembers.push(member);
+        const dateVal = document.getElementById(`date-${member}`).value;
+        repaymentDates[member] = dateVal || "Next Month";
+      });
+
+      const { shares, deferredAmounts } = calculateFairShares(amount, members, tightMembers, payer);
+
+      // Record pledges
+      tightMembers.forEach(tm => {
+        if (deferredAmounts[tm] > 0) {
+          deferredPledges.push({
+            id: Date.now() + Math.random(),
+            member: tm,
+            originalAmount: deferredAmounts[tm],
+            remainingAmount: deferredAmounts[tm],
+            dueDate: repaymentDates[tm],
+            expenseDesc: desc
+          });
+        }
+      });
+
+      // Auto-offset check
+      processAutoOffset(payer, amount, shares[payer]);
 
       expenses.unshift({
         id: Date.now(),
@@ -438,17 +346,84 @@
         amount,
         payer,
         tightMembers,
-        shares: calculatedShares
+        repaymentDates,
+        deferredAmounts,
+        shares
       });
 
-      // Reset form
+      // Reset
       document.getElementById("expense-name").value = "";
       document.getElementById("expense-amount").value = "";
       document.getElementById("expense-payer").value = "";
-      document.querySelectorAll(".tight-cb").forEach(cb => cb.checked = false);
+      document.querySelectorAll(".tight-cb").forEach(cb => {
+        cb.checked = false;
+        toggleDateField(cb.getAttribute("data-member"));
+      });
 
+      renderMembers();
+      renderPledges();
       renderHistory();
       updateSettleUp();
+    }
+
+    // FEATURE 3: MICRO-INSTALLMENT REPAYMENT
+    function handleMicroPayment(pledgeId) {
+      const pledge = deferredPledges.find(p => p.id === pledgeId);
+      if (!pledge) return;
+
+      const input = prompt(`Enter installment amount for ${pledge.member} (Remaining: ₹${pledge.remainingAmount.toFixed(2)}):`, "50");
+      const val = parseFloat(input);
+      if (!val || val <= 0) return;
+
+      pledge.remainingAmount = Math.max(0, Math.round((pledge.remainingAmount - val) * 100) / 100);
+      renderPledges();
+      renderMembers();
+    }
+
+    // FEATURE 4: GROUP FORGIVE VOTE
+    function handleForgiveVote(pledgeId) {
+      const pledge = deferredPledges.find(p => p.id === pledgeId);
+      if (!pledge) return;
+
+      const ok = confirm(`Trigger Group Forgive Vote? This anonymously absorbs ₹${pledge.remainingAmount.toFixed(2)} owed by ${pledge.member} as shared group support.`);
+      if (ok) {
+        pledge.remainingAmount = 0;
+        pledge.forgiven = true;
+        renderPledges();
+        renderMembers();
+      }
+    }
+
+    function renderPledges() {
+      const container = document.getElementById("pledges-container");
+      const active = deferredPledges.filter(p => p.remainingAmount > 0 || p.forgiven);
+
+      if (!active.length) {
+        container.innerHTML = "<p class='empty-state'>No pending deferred pledges. All accounts settled!</p>";
+        return;
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+      container.innerHTML = "";
+
+      active.forEach(p => {
+        const isOverdue = p.dueDate < today && p.remainingAmount > 0;
+        container.innerHTML += `
+          <div class="pledge-item">
+            <div class="pledge-header">
+              <span><strong>${p.member}</strong> — ${p.expenseDesc}</span>
+              <span>₹${p.remainingAmount.toFixed(2)} remaining</span>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+              <span>Target Date: <strong>${p.dueDate}</strong> ${isOverdue ? '<span class="pill-locked">Overdue</span>' : ''} ${p.forgiven ? '<span class="pill-defer">Forgiven by Group</span>' : ''}</span>
+              ${p.remainingAmount > 0 ? `
+                <div style="display: flex; gap: 0.4rem;">
+                  <button class="btn-action btn-pay" onclick="handleMicroPayment(${p.id})">Pay Installment</button>
+                  <button class="btn-action btn-forgive" onclick="handleForgiveVote(${p.id})">Forgive (Vote)</button>
+                </div>` : ''}
+            </div>
+          </div>`;
+      });
     }
 
     function renderHistory() {
@@ -462,7 +437,15 @@
         let breakdown = "";
         for (const [person, share] of Object.entries(exp.shares)) {
           const isTight = exp.tightMembers.includes(person);
-          breakdown += `<div>• <strong>${person}</strong>: ₹${share.toFixed(2)} ${isTight ? '<span class="pill-tight">Tight (50%)</span>' : ''}</div>`;
+          const deferred = exp.deferredAmounts[person] || 0;
+          const repDate = exp.repaymentDates[person];
+
+          breakdown += `
+            <div style="margin-bottom: 4px;">
+              • <strong>${person}</strong>: Pays ₹${share.toFixed(2)} now
+              ${isTight ? `<span class="pill-tight">Tight (50%)</span>` : ''}
+              ${isTight ? `<span class="pill-defer">Deferred ₹${deferred.toFixed(2)} due by ${repDate}</span>` : ''}
+            </div>`;
         }
 
         container.innerHTML += `
@@ -476,7 +459,6 @@
       });
     }
 
-    // Net balance settlement logic (payer vs consumed)
     function updateSettleUp() {
       const container = document.getElementById("settle-container");
       if (!members.length || !expenses.length) {
@@ -488,9 +470,7 @@
       members.forEach(m => balances[m] = 0);
 
       expenses.forEach(exp => {
-        // Payer gets credit
         if (balances[exp.payer] !== undefined) balances[exp.payer] += exp.amount;
-        // Each person gets debited their share
         Object.entries(exp.shares).forEach(([person, share]) => {
           if (balances[person] !== undefined) balances[person] -= share;
         });
