@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FairSplit - Cloud-Native Equitable Expense Sharing</title>
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-color: #f4f8f8;
+      --card-bg: #ffffff;
+      --navy: #0f2d3c;
+      --navy-light: #1b4965;
+      --teal: #007f8a;
+      --teal-light: #e0f4f5;
+      --mint: #2ec4b6;
+      --tight-accent: #fef3c7;
+      --tight-text: #92400e;
+      --border: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --danger: #e63946;
+      --success: #2a9d8f;
+      --radius: 12px;
+      --shadow: 0 4px 16px rgba(15, 45, 60, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 2rem 1rem;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      color: var(--navy);
+      font-size: 2.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-top: 0.25rem;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-top: 0.5rem;
+      background: var(--teal-light);
+      color: var(--teal);
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .card h2 {
+      color: var(--navy);
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 0.35rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 0.65rem 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      background: #fafafa;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--teal);
+      background: #fff;
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.2rem;
+      transition: 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: #fff;
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      background: #006b74;
+    }
+
+    .btn-secondary {
+      background: var(--navy);
+      color: #fff;
+    }
+
+    .members-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .member-tag {
+      background: var(--teal-light);
+      color: var(--teal);
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .member-tag button {
+      background: none;
+      border: none;
+      color: var(--teal);
+      padding: 0;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .status-list {
+      background: var(--bg-color);
+      border-radius: 8px;
+      padding: 0.75rem;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.4rem 0;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .status-row:last-child {
+      border-bottom: none;
+    }
+
+    .history-card, .settle-card {
+      margin-top: 1.5rem;
+    }
+
+    .history-item {
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      background: #fafafa;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 0.4rem;
+    }
+
+    .pill-tight {
+      background: var(--tight-accent);
+      color: var(--tight-text);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.75rem;
+    }
+
+    .balance-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .text-owed { color: var(--success); font-weight: 600; }
+    .text-owes { color: var(--danger); font-weight: 600; }
+    .text-settled { color: var(--text-muted); }
+    .empty-state { text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 1rem 0; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>🤝 FairSplit</h1>
+      <p>Empathetic Expense Sharing with Automatic Financial Balancing</p>
+      <div class="badge">Cloud-Native Edge Prototype</div>
+    </header>
+
+    <div class="grid">
+      <!-- 1. GROUP MEMBERS -->
+      <section class="card">
+        <h2>1. Add Members</h2>
+        <form onsubmit="handleAddMember(event)" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+          <input type="text" id="member-name-input" placeholder="e.g. Alice, Bob, Priya" required />
+          <button type="submit" class="btn-secondary">Add</button>
+        </form>
+        <label>Current Members:</label>
+        <div id="members-list" class="members-list"></div>
+      </section>
+
+      <!-- 2. ADD EXPENSE -->
+      <section class="card">
+        <h2>2. Add Expense</h2>
+        <form onsubmit="handleAddExpense(event)">
+          <div class="form-group">
+            <label for="expense-name">Description</label>
+            <input type="text" id="expense-name" placeholder="e.g. Canteen Lunch, Groceries" required />
+          </div>
+
+          <div class="form-group">
+            <label for="expense-amount">Total Amount (₹)</label>
+            <input type="number" id="expense-amount" min="1" step="0.01" placeholder="300" required />
+          </div>
+
+          <div class="form-group">
+            <label for="expense-payer">Who Paid?</label>
+            <select id="expense-payer" required>
+              <option value="" disabled selected>Select member</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Check if "Tight this month" (Pays 50%):</label>
+            <div id="status-checkboxes" class="status-list"></div>
+          </div>
+
+          <button type="submit" class="btn-primary">Add Expense & Calculate</button>
+        </form>
+      </section>
+    </div>
+
+    <!-- 3. EXPENSE HISTORY -->
+    <section class="card history-card">
+      <h2>3. Calculation Breakdown</h2>
+      <div id="history-container">
+        <p class="empty-state">No expenses added yet.</p>
+      </div>
+    </section>
+
+    <!-- 4. NET SETTLE-UP -->
+    <section class="card settle-card">
+      <h2>4. Net Settle-Up Summary</h2>
+      <div id="settle-container">
+        <p class="empty-state">Add members and expenses to view net balances.</p>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // In-memory state pre-filled for instant hackathon demos
+    let members = ["Alice", "Bob", "Priya"];
+    let expenses = [];
+
+    window.addEventListener("DOMContentLoaded", () => {
+      renderMembers();
+    });
+
+    function handleAddMember(e) {
+      e.preventDefault();
+      const input = document.getElementById("member-name-input");
+      const name = input.value.trim();
+      if (!name) return;
+      if (members.some(m => m.toLowerCase() === name.toLowerCase())) {
+        alert("Member already added!");
+        return;
+      }
+      members.push(name);
+      input.value = "";
+      renderMembers();
+      updateSettleUp();
+    }
+
+    function removeMember(name) {
+      members = members.filter(m => m !== name);
+      renderMembers();
+      updateSettleUp();
+    }
+
+    function renderMembers() {
+      const list = document.getElementById("members-list");
+      const select = document.getElementById("expense-payer");
+      const checkContainer = document.getElementById("status-checkboxes");
+
+      // Update badges
+      list.innerHTML = members.length ? "" : "<p class='empty-state'>No members yet.</p>";
+      members.forEach(m => {
+        list.innerHTML += `
+          <div class="member-tag">
+            ${m} <button type="button" onclick="removeMember('${m}')">&times;</button>
+          </div>`;
+      });
+
+      // Update dropdown
+      select.innerHTML = '<option value="" disabled selected>Select member</option>';
+      members.forEach(m => {
+        select.innerHTML += `<option value="${m}">${m}</option>`;
+      });
+
+      // Update checkboxes
+      checkContainer.innerHTML = members.length ? "" : "<span class='empty-state'>Add members first.</span>";
+      members.forEach(m => {
+        checkContainer.innerHTML += `
+          <div class="status-row">
+            <span>${m}</span>
+            <label style="font-size: 0.85rem; cursor: pointer;">
+              <input type="checkbox" data-member="${m}" class="tight-cb" /> Tight this month
+            </label>
+          </div>`;
+      });
+    }
+
+    // --- FAIRNESS CALCULATION ENGINE WITH ALL EDGE CASES SOLVED ---
+    function calculateFairShares(totalAmount, allMembers, tightList, payer) {
+      const N = allMembers.length;
+      const k = tightList.length;
+      const m = N - k;
+      const shares = {};
+
+      // Edge Case 1: k === N (everyone tight) or k === 0 (nobody tight)
+      if (k === 0 || k === N) {
+        const equalShare = Math.floor((totalAmount / N) * 100) / 100;
+        allMembers.forEach(person => shares[person] = equalShare);
+      } else {
+        // Core Formula
+        const baseEqual = totalAmount / N;
+        const tightShare = Math.floor((0.5 * baseEqual) * 100) / 100;
+        const totalTightPaid = tightShare * k;
+        const normalShare = Math.floor(((totalAmount - totalTightPaid) / m) * 100) / 100;
+
+        allMembers.forEach(person => {
+          shares[person] = tightList.includes(person) ? tightShare : normalShare;
+        });
+      }
+
+      // Edge Case 2: Rounding / Cent Preservation (assign leftover paise to payer)
+      let allocatedTotal = 0;
+      Object.values(shares).forEach(val => allocatedTotal += val);
+      const delta = Math.round((totalAmount - allocatedTotal) * 100) / 100;
+      if (delta !== 0 && shares[payer] !== undefined) {
+        shares[payer] = Math.round((shares[payer] + delta) * 100) / 100;
+      }
+
+      return shares;
+    }
+
+    function handleAddExpense(e) {
+      e.preventDefault();
+      if (members.length < 2) {
+        alert("Please have at least 2 members.");
+        return;
+      }
+
+      const desc = document.getElementById("expense-name").value.trim();
+      const amount = parseFloat(document.getElementById("expense-amount").value);
+      const payer = document.getElementById("expense-payer").value;
+
+      const checkedBoxes = document.querySelectorAll(".tight-cb:checked");
+      const tightMembers = Array.from(checkedBoxes).map(cb => cb.getAttribute("data-member"));
+
+      const calculatedShares = calculateFairShares(amount, members, tightMembers, payer);
+
+      expenses.unshift({
+        id: Date.now(),
+        desc,
+        amount,
+        payer,
+        tightMembers,
+        shares: calculatedShares
+      });
+
+      // Reset form
+      document.getElementById("expense-name").value = "";
+      document.getElementById("expense-amount").value = "";
+      document.getElementById("expense-payer").value = "";
+      document.querySelectorAll(".tight-cb").forEach(cb => cb.checked = false);
+
+      renderHistory();
+      updateSettleUp();
+    }
+
+    function renderHistory() {
+      const container = document.getElementById("history-container");
+      if (!expenses.length) {
+        container.innerHTML = "<p class='empty-state'>No expenses added yet.</p>";
+        return;
+      }
+      container.innerHTML = "";
+      expenses.forEach(exp => {
+        let breakdown = "";
+        for (const [person, share] of Object.entries(exp.shares)) {
+          const isTight = exp.tightMembers.includes(person);
+          breakdown += `<div>• <strong>${person}</strong>: ₹${share.toFixed(2)} ${isTight ? '<span class="pill-tight">Tight (50%)</span>' : ''}</div>`;
+        }
+
+        container.innerHTML += `
+          <div class="history-item">
+            <div class="history-header">
+              <span>${exp.desc} (Paid by <strong>${exp.payer}</strong>)</span>
+              <span>₹${exp.amount.toFixed(2)}</span>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">${breakdown}</div>
+          </div>`;
+      });
+    }
+
+    // Net balance settlement logic (payer vs consumed)
+    function updateSettleUp() {
+      const container = document.getElementById("settle-container");
+      if (!members.length || !expenses.length) {
+        container.innerHTML = "<p class='empty-state'>Add members and expenses to view net balances.</p>";
+        return;
+      }
+
+      const balances = {};
+      members.forEach(m => balances[m] = 0);
+
+      expenses.forEach(exp => {
+        // Payer gets credit
+        if (balances[exp.payer] !== undefined) balances[exp.payer] += exp.amount;
+        // Each person gets debited their share
+        Object.entries(exp.shares).forEach(([person, share]) => {
+          if (balances[person] !== undefined) balances[person] -= share;
+        });
+      });
+
+      container.innerHTML = "";
+      members.forEach(m => {
+        const net = Math.round((balances[m] || 0) * 100) / 100;
+        let status = `<span class="text-settled">all settled (₹0.00)</span>`;
+        if (net > 0.01) status = `<span class="text-owed">is owed ₹${net.toFixed(2)}</span>`;
+        if (net < -0.01) status = `<span class="text-owes">owes ₹${Math.abs(net).toFixed(2)}</span>`;
+
+        container.innerHTML += `
+          <div class="balance-row">
+            <span><strong>${m}</strong></span>
+            <span>${status}</span>
+          </div>`;
+      });
+    }
+  </script>
+</body>
+</html>
